@@ -109,7 +109,7 @@ func (s *inMemoryService) Get(ctx context.Context, req *GetRequest) (*GetRespons
 
 	res, ok := s.sessions.Get(id.Encode())
 	if !ok {
-		return nil, fmt.Errorf("session %+v not found", req.SessionID)
+		return nil, ErrSessionNotFound(sessionID)
 	}
 
 	copiedSession := copySessionWithoutStateAndEvents(res)
@@ -215,7 +215,7 @@ func (s *inMemoryService) AppendEvent(ctx context.Context, curSession Session, e
 
 	stored_session, ok := s.sessions.Get(sess.id.Encode())
 	if !ok {
-		return fmt.Errorf("session not found, cannot apply event")
+		return ErrSessionNotFound(sess.ID())
 	}
 
 	// update the in-memory session
