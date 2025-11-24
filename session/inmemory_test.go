@@ -36,7 +36,7 @@ func checkTestError(t *testing.T, err error, wantErr bool, format string, args .
 	}
 }
 
-func Test_databaseService_Create(t *testing.T) {
+func Test_inMemoryService_Create(t *testing.T) {
 	tests := []struct {
 		name    string
 		setup   func(t *testing.T) Service
