@@ -159,7 +159,7 @@ func (s *databaseService) Get(ctx context.Context, req *session.GetRequest) (*se
 			return nil, fmt.Errorf("%w with id %q", session.ErrSessionNotFound, sessionID)
 		}
 
-		// For any error including ErrRecordNotFound, return it as a system error.
+		// For any other database error, return it as a system error.
 		return nil, fmt.Errorf("database error while fetching session: %w", err)
 	}
 
