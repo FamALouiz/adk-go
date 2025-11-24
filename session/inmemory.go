@@ -110,7 +110,7 @@ func (s *inMemoryService) Get(ctx context.Context, req *GetRequest) (*GetRespons
 
 	res, ok := s.sessions.Get(id.Encode())
 	if !ok {
-return nil, fmt.Errorf("%w with id %q", ErrSessionNotFound, req.SessionID)
+		return nil, fmt.Errorf("%w with id %q", ErrSessionNotFound, req.SessionID)
 	}
 
 	copiedSession := copySessionWithoutStateAndEvents(res)
@@ -194,7 +194,7 @@ func (s *inMemoryService) Delete(ctx context.Context, req *DeleteRequest) error 
 	encodedKey := id.Encode()
 	_, ok := s.sessions.Get(encodedKey)
 	if !ok {
-		return fmt.Errorf("%w with id %+v ", ErrSessionNotFound, req.SessionID)
+		return fmt.Errorf("%w with id %q", ErrSessionNotFound, req.SessionID)
 	}
 
 	s.sessions.Delete(encodedKey)
@@ -222,7 +222,7 @@ func (s *inMemoryService) AppendEvent(ctx context.Context, curSession Session, e
 
 	stored_session, ok := s.sessions.Get(sess.id.Encode())
 	if !ok {
-return fmt.Errorf("%w with id %q", ErrSessionNotFound, sess.ID())
+		return fmt.Errorf("%w with id %q", ErrSessionNotFound, sess.ID())
 	}
 
 	// update the in-memory session

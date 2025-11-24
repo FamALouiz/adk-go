@@ -156,7 +156,7 @@ func (s *databaseService) Get(ctx context.Context, req *session.GetRequest) (*se
 		First(&foundSession).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("%w with id %+v ", session.ErrSessionNotFound, sessionID)
+			return nil, fmt.Errorf("%w with id %q", session.ErrSessionNotFound, sessionID)
 		}
 
 		// For any error including ErrRecordNotFound, return it as a system error.
@@ -317,7 +317,7 @@ func (s *databaseService) Delete(ctx context.Context, req *session.DeleteRequest
 		}
 
 		if result.RowsAffected == 0 {
-			return fmt.Errorf("%w with id %+v ", session.ErrSessionNotFound, sessionID)
+			return fmt.Errorf("%w with id %q", session.ErrSessionNotFound, sessionID)
 		}
 
 		return nil // Returning nil commits the transaction
