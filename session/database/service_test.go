@@ -152,14 +152,16 @@ func Test_databaseService_Delete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := tt.setup(t)
 			err := s.Delete(t.Context(), tt.req)
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("databaseService.Delete() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
 			if tt.wantNotFoundErr {
 				if !errors.Is(err, session.ErrSessionNotFound) {
 					t.Fatalf("databaseService.Delete() error = %v, want ErrSessionNotFound", err)
 				}
 				return
-			}
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("databaseService.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
