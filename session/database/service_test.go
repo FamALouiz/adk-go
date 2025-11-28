@@ -15,7 +15,6 @@
 package database
 
 import (
-	"errors"
 	"maps"
 	"strconv"
 	"testing"
@@ -27,6 +26,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
+	"google.golang.org/adk/internal/errorutil"
 	"google.golang.org/adk/model"
 	"google.golang.org/adk/session"
 )
@@ -82,10 +82,7 @@ func Test_databaseService_Create(t *testing.T) {
 
 			got, err := s.Create(t.Context(), tt.req)
 
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("databaseService.Create() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			errorutil.AssertTestError(t, err, tt.wantErr, nil, "databaseService.Create()")
 
 			if err != nil {
 				return
@@ -152,15 +149,12 @@ func Test_databaseService_Delete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := tt.setup(t)
 			err := s.Delete(t.Context(), tt.req)
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("databaseService.Delete() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
+			var wantSpecificErr error
 			if tt.wantNotFoundErr {
-				if !errors.Is(err, session.ErrSessionNotFound) {
-					t.Fatalf("databaseService.Delete() error = %v, want ErrSessionNotFound", err)
-				}
+				wantSpecificErr = session.ErrSessionNotFound
+			}
+			errorutil.AssertTestError(t, err, tt.wantErr, wantSpecificErr, "databaseService.Delete()")
+			if err != nil {
 				return
 			}
 		})
@@ -355,18 +349,11 @@ func Test_databaseService_Get(t *testing.T) {
 
 			got, err := s.Get(t.Context(), tt.req)
 
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("databaseService.Get() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
+			var wantSpecificErr error
 			if tt.wantNotFoundErr {
-				if !errors.Is(err, session.ErrSessionNotFound) {
-					t.Fatalf("databaseService.Get() error = %v, want ErrSessionNotFound", err)
-				}
-				return
+				wantSpecificErr = session.ErrSessionNotFound
 			}
-
+			errorutil.AssertTestError(t, err, tt.wantErr, wantSpecificErr, "databaseService.Get()")
 			if err != nil {
 				return
 			}
@@ -752,18 +739,11 @@ func Test_databaseService_AppendEvent(t *testing.T) {
 			tt.session.updatedAt = time.Now() // set updatedAt value to pass stale validation
 			err := s.AppendEvent(ctx, tt.session, tt.event)
 
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("databaseService.AppendEvent() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
+			var wantSpecificErr error
 			if tt.wantNotFoundErr {
-				if !errors.Is(err, session.ErrSessionNotFound) {
-					t.Fatalf("databaseService.AppendEvent() error = %v, want ErrSessionNotFound", err)
-				}
-				return
+				wantSpecificErr = session.ErrSessionNotFound
 			}
-
+			errorutil.AssertTestError(t, err, tt.wantErr, wantSpecificErr, "databaseService.AppendEvent()")
 			if err != nil {
 				return
 			}
